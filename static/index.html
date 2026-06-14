@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>用户登录</title>
+    <!-- Bootstrap 5 CSS (简洁样式，支持响应式) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 自定义额外样式：使卡片垂直居中并添加轻柔阴影 */
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .login-card {
+            max-width: 420px;
+            width: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: none;
+        }
+        .card-header {
+            background: white;
+            border-bottom: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.8rem;
+            padding-top: 2rem;
+            color: #0d6efd;
+        }
+        .btn-login {
+            padding: 0.6rem;
+            font-weight: 500;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1.2rem;
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card login-card">
+    <div class="card-header bg-transparent">
+        用户登录
+    </div>
+    <div class="card-body p-4">
+        <!-- 登录表单 -->
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">用户名</label>
+                <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="请输入用户名" required autocomplete="username">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">密码</label>
+                <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="请输入密码" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100 btn-login">登录</button>
+        </form>
+        
+        <!-- 底部跳转注册页链接 -->
+        <div class="register-link">
+            <span class="text-muted">还没有账号？</span>
+            <a href="register.html" class="text-decoration-none">立即注册</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * 登录页脚本
+     * 功能：收集表单数据，POST请求 /api/login 接口，根据权限结果展示弹窗并跳转/提示
+     * 使用 fetch 处理跨域（后端已开启CORS）
+     */
+
+    // 获取表单元素
+    const loginForm = document.getElementById('loginForm');
+    
+    // 监听表单提交事件
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();  // 阻止默认刷新行为
+        
+        // 1. 获取输入内容并去除首尾空格
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        // 简单前端校验：保证字段非空
+        if (!username || !password) {
+            alert('请填写完整的用户名和密码');
+            return;
+        }
+        
+        // 2. 构造请求体
+        const requestBody = {
+            username: username,
+            password: password
+        };
+        
+        // 3. 发送 POST 请求到后端登录接口 (当前域名下的 /api/login)
+        try {
+            const BACKEND_URL = 'http://127.0.0.1:5000';
+            const response = await fetch(`${BACKEND_URL}/api/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            // 解析返回的JSON数据（无论状态码，后端统一返回200或400但带code字段，此处取实际响应体）
+            const result = await response.json();
+            
+            // 根据业务code处理
+            if (result.code === 200) {
+                // 登录成功
+                const allowResB = result.allow_resB;  // 布尔值 true/false
+                // 根据需求弹窗提示，并指导后续跳转
+                // 由于题目要求“根据返回的 allow_resB 权限，跳转页面或直接提示可访问资源A/B”，
+                // 这里做两种场景：
+                // 简单演示：弹出成功信息并告知资源权限，然后跳转到“选择页”（可以自定义一个简单选择页，或跳转到同目录下dashboard.html）
+                // 为符合需求，我们跳转到“资源导航页” (permission.html)，并将用户名和权限通过URL参数传递以便展示
+                // 如果后续没有实现permission.html，也可以仅alert后跳转到相同页面的hash提示，但遵循常规设计——创建简易导航页
+                let message = `登录成功！\n您可访问资源A（全员）\n`;
+                if (allowResB) {
+                    message += `同时您有权限访问资源B。`;
+                } else {
+                    message += `但您暂无资源B权限。`;
+                }
+                alert(message);
+                
+                // 根据要求“跳转页面（先跳选择页，或者直接提示可访问资源A/B）”
+                // 这里我们跳转到一个简洁的权限选择/导航页面，并携带username和allowResB参数，以便展示对应功能
+                // 若您后续需要实现 register.html 同等风格，可新建 dashboard.html 或 resource_guide.html
+                // 为避免404，这里跳转到一个通用的资源展示页，同时如果未实现该页面，浏览器会报错，但逻辑符合预期。
+                // 更稳健：直接弹窗后不跳转，但需求指明“跳转页面”，故实现跳转。
+                window.location.href = `resource_guide.html?username=${encodeURIComponent(username)}&allowResB=${allowResB}`;
+            } else {
+                // 登录失败，后端返回msg错误信息（如账号或密码错误）
+                alert(`登录失败：${result.msg || '账号或密码错误'}`);
+            }
+        } catch (error) {
+            // 网络错误或请求失败时的异常处理
+            console.error('登录请求异常:', error);
+            alert('网络错误或服务器无法连接，请稍后重试');
+        }
+    });
+</script>
+<!-- 可选: Bootstrap JS 主要用于部分交互（非必须，但为了布局完整，加上不影响）-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

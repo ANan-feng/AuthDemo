@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资源导航 - 选择访问资源</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .nav-card {
+            max-width: 500px;
+            width: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+            background: white;
+        }
+        .resource-btn {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .resource-btn:hover {
+            transform: translateY(-2px);
+        }
+        .badge-resB {
+            background: #dc3545;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card nav-card">
+        <div class="card-body p-4 p-md-5 text-center">
+            <h2 class="mb-3">📋 资源导航</h2>
+            <p class="text-muted mb-4" id="welcomeMsg">加载中...</p>
+            
+            <!-- 资源A：全员可访问 -->
+            <a href="resA.html" class="btn btn-success resource-btn w-100">
+                📢 公开资源A
+                <small class="d-block text-white-50">社区公告、公开资讯（全员可访问）</small>
+            </a>
+            
+            <!-- 资源B：动态显示（根据权限） -->
+            <div id="resBBtnContainer" class="mt-2">
+                <div class="text-center text-muted py-3">正在检测权限...</div>
+            </div>
+            
+            <hr class="my-4">
+            <a href="index.html" class="btn btn-outline-secondary btn-sm">🚪 退出登录</a>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * 资源导航页
+         * 功能：根据登录用户的权限，显示可访问的资源入口
+         */
+        
+        // 从URL参数获取用户信息和权限
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        const allowResB = urlParams.get('allowResB') === 'true';
+        
+        // 显示欢迎信息
+        const welcomeMsg = document.getElementById('welcomeMsg');
+        if (username) {
+            welcomeMsg.innerHTML = `欢迎，<strong>${username}</strong><br>请选择要访问的资源`;
+            // 保存到sessionStorage，供其他页面使用
+            sessionStorage.setItem('currentUser', username);
+        } else {
+            // 尝试从sessionStorage获取
+            const storedUser = sessionStorage.getItem('currentUser');
+            if (storedUser) {
+                welcomeMsg.innerHTML = `欢迎回来，<strong>${storedUser}</strong><br>请选择要访问的资源`;
+            } else {
+                welcomeMsg.innerHTML = `请先 <a href="index.html">登录</a> 后访问资源`;
+            }
+        }
+        
+        // 根据权限显示资源B按钮
+        const container = document.getElementById('resBBtnContainer');
+        if (allowResB) {
+            container.innerHTML = `
+                <a href="resB.html?username=${encodeURIComponent(username || sessionStorage.getItem('currentUser') || '')}" 
+                   class="btn btn-danger resource-btn w-100">
+                    🔒 受限资源B
+                    <small class="d-block text-white-50">内部资料、私密数据（已授权）</small>
+                </a>
+            `;
+        } else {
+            container.innerHTML = `
+                <button class="btn btn-secondary resource-btn w-100" disabled style="cursor: not-allowed; opacity: 0.6;">
+                    🔒 受限资源B
+                    <small class="d-block">暂无权限，请联系管理员开通</small>
+                </button>
+            `;
+        }
+    </script>
+</body>
+</html>

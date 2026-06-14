@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>公开资源A - 社区公告</title>
+    <!-- Bootstrap 5 CSS (简洁样式) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 简单自定义样式 */
+        body {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .header-bar {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        .content-card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .resource-badge {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+        .announcement-item {
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            background: #f8f9fa;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+        }
+        .back-btn {
+            transition: all 0.2s;
+        }
+        .back-btn:hover {
+            transform: translateX(-3px);
+        }
+    </style>
+</head>
+<body>
+
+<!-- 顶部导航栏：包含返回入口 -->
+<div class="header-bar">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0 text-success">
+                📢 公开资源A
+            </h4>
+            <a href="javascript:void(0);" onclick="goBack()" class="btn btn-outline-success back-btn">
+                ← 返回登录/功能选择页
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card content-card">
+                <div class="card-body p-4 p-md-5">
+                    <!-- 资源标识 -->
+                    <div class="text-center mb-4">
+                        <span class="resource-badge">✓ 全员可访问</span>
+                        <h2 class="mt-3 mb-2">社区通用公告 & 公开资讯</h2>
+                        <p class="text-muted">所有已登录用户均可正常访问此页面内容</p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- 公开资讯内容区域 -->
+                    <div class="mt-4">
+                        <h5 class="mb-3">📌 最新公告</h5>
+                        <div class="announcement-item">
+                            <strong>2026年社区新规上线</strong>
+                            <p class="mb-0 text-muted mt-1">为营造更好的交流环境，社区已启用AI昵称审核机制，请各位用户遵守规范。感谢您的理解与支持！</p>
+                            <small class="text-secondary">发布时间：2026-06-10</small>
+                        </div>
+                        
+                        <div class="announcement-item">
+                            <strong>🎉 资源B开放申请通知</strong>
+                            <p class="mb-0 text-muted mt-1">如果您需要访问资源B（专业文档库），请联系管理员开通权限。目前部分用户已获得内测资格。</p>
+                            <small class="text-secondary">发布时间：2026-06-08</small>
+                        </div>
+                        
+                        <div class="announcement-item">
+                            <strong>🛠 系统维护公告</strong>
+                            <p class="mb-0 text-muted mt-1">平台将于2026年6月20日凌晨2:00-4:00进行例行维护，届时可能短暂影响访问，敬请谅解。</p>
+                            <small class="text-secondary">发布时间：2026-06-05</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="mb-3">📰 公开资讯</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item bg-transparent px-0">
+                                <strong>· 社区月报（2026年5月）</strong> – 用户活跃度提升30%，违规昵称拦截率99.2%
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <strong>· 技术分享会预告</strong> – 6月18日晚8点，主题：《大模型应用实战》
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <strong>· 合作伙伴招募</strong> – 诚邀内容创作者加入，共同建设社区生态
+                            </li>
+                            <li class="list-group-item bg-transparent px-0">
+                                <strong>· 帮助文档更新</strong> – 新增“权限管理常见问题”章节，可随时查阅
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-light mt-4 text-center" role="alert">
+                        💡 提示：如需访问资源B，请检查您的账号权限或联系管理员。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * 返回登录/功能选择页
+     * 由于可能有多个入口（登录页index.html或资源导航页），此处优先返回功能选择页（resource_guide.html）
+     * 如果resource_guide.html不存在，则返回index.html，用户可再次登录跳转
+     */
+    function goBack() {
+        // 尝试跳转到资源导航页（功能选择页），如果之前登录后访问过该页面则优先返回那里
+        // 若需直接返回登录页也可，此处实现为返回登录页更通用
+        // 根据需求“回到登录/功能选择页”，我们提供一个选择：优先尝试导航页，若失败则回登录页
+        // 简单实现：跳转到 index.html （登录页），用户可再次选择功能
+        // 同时可检测是否有其他路径，但为了稳妥，直接跳转到登录页是最清晰的做法
+        window.location.href = 'index.html';
+        
+        // 如果您已实现了 resource_guide.html，可以改为：
+        // window.location.href = 'resource_guide.html';
+        // 但需求是“回到登录/功能选择页”，两者都可，这里采用登录页即可满足“返回登录页”的预期
+    }
+    
+    // 可选：从URL参数中获取用户名，显示欢迎信息（增强体验）
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+    
+    const username = getQueryParam('username');
+    if (username) {
+        // 动态增加欢迎语，不强制，仅作为友好提示
+        const headerTitle = document.querySelector('.header-bar h4');
+        if (headerTitle) {
+            // 保持原有内容，不覆盖主要设计
+            console.log(`欢迎用户: ${username}`);
+        }
+    }
+</script>
+
+<!-- Bootstrap JS Bundle (可选，用于部分交互) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

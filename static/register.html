@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>用户注册</title>
+    <!-- Bootstrap 5 CSS (简洁样式，支持响应式) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 自定义样式：垂直居中，柔和阴影 */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .register-card {
+            max-width: 450px;
+            width: 100%;
+            border-radius: 1rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+            border: none;
+            background: white;
+        }
+        .card-header {
+            background: white;
+            border-bottom: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.8rem;
+            padding-top: 2rem;
+            color: #667eea;
+        }
+        .btn-register {
+            padding: 0.6rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            transition: transform 0.2s;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1.2rem;
+            padding-bottom: 1rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        /* 加载遮罩样式 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            visibility: hidden;
+        }
+        .loading-spinner {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .loading-spinner .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card register-card">
+    <div class="card-header bg-transparent">
+        用户注册
+    </div>
+    <div class="card-body p-4">
+        <!-- 注册表单 -->
+        <form id="registerForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">注册昵称（用户名）</label>
+                <input type="text" class="form-control form-control-lg" id="username" name="username" placeholder="请输入用户名" required autocomplete="off">
+                <div class="form-text">昵称需符合社区规范，违规名称将无法注册</div>
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">密码</label>
+                <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="请输入密码" required autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100 btn-register" id="registerBtn">立即注册</button>
+        </form>
+        
+        <!-- 底部跳转登录页链接 -->
+        <div class="login-link">
+            <span class="text-muted">已有账号？</span>
+            <a href="index.html" class="text-decoration-none">返回登录</a>
+        </div>
+    </div>
+</div>
+
+<!-- 加载遮罩 -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        <div>注册中...</div>
+    </div>
+</div>
+
+<script>
+    // 获取表单元素
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    
+    // 辅助函数：重置按钮状态并隐藏遮罩
+    function resetButtonAndHideLoading() {
+        registerBtn.disabled = false;
+        registerBtn.textContent = '立即注册';
+        loadingOverlay.style.visibility = 'hidden';
+    }
+    
+    // 辅助函数：显示加载状态
+    function showLoading() {
+        registerBtn.disabled = true;
+        registerBtn.textContent = '注册中...';
+        loadingOverlay.style.visibility = 'visible';
+    }
+    
+    // 监听表单提交事件
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        // 获取输入值
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        // 前端校验
+        if (!username) {
+            alert('请填写用户名');
+            return;
+        }
+        if (!password) {
+            alert('请填写密码');
+            return;
+        }
+        if (username.length < 2 || username.length > 20) {
+            alert('用户名长度应在2-20个字符之间');
+            return;
+        }
+        if (password.length < 4) {
+            alert('密码长度至少4个字符');
+            return;
+        }
+        
+        // 显示加载状态
+        showLoading();
+        
+        // 构造请求体
+        const requestBody = {
+            username: username,
+            password: password
+        };
+        
+        try {
+            const BACKEND_URL = 'http://127.0.0.1:5000';
+            console.log('1. 发送注册请求:', requestBody);
+            
+            const response = await fetch(`${BACKEND_URL}/api/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+            
+            const result = await response.json();
+            console.log('2. 服务器返回:', result);
+            
+            // 隐藏加载遮罩
+            resetButtonAndHideLoading();
+            
+            if (result.code === 200) {
+                // 注册成功
+                console.log('3. 注册成功，准备跳转');
+                alert('注册成功！');
+                
+                // 尝试多种跳转方式
+                console.log('4. 尝试跳转到 index.html');
+                console.log('当前路径:', window.location.href);
+                console.log('当前路径名:', window.location.pathname);
+                
+                // 使用 window.location.href
+                window.location.href = 'index.html';
+                
+            } else {
+                console.log('注册失败:', result.msg);
+                alert(`注册失败：${result.msg || '请稍后重试'}`);
+            }
+        } catch (error) {
+            console.error('注册请求异常:', error);
+            resetButtonAndHideLoading();
+            alert('网络错误或服务器无法连接，请检查后端服务是否正常运行');
+        }
+    });
+</script>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
