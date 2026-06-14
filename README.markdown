@@ -3,6 +3,7 @@
 本项目为**用户登录/注册+昵称违规检测+资源权限控制**演示 Demo，实现账号注册登录、基于智谱 GLM-4-Flash 大模型的社区昵称违规识别、差异化资源访问权限管控，已部署至 Render 提供公网访问。
 
 公网访问地址：https://authdemo-am2r.onrender.com/static/index.html
+
 测试账号（可访问受限资源B）：
 - 用户名：`admin001`
 - 密码：`123456`
