@@ -182,10 +182,9 @@
         };
         
         try {
-            const BACKEND_URL = 'http://127.0.0.1:5000';
             console.log('1. 发送注册请求:', requestBody);
             
-            const response = await fetch(`${BACKEND_URL}/api/register`, {
+            const response = await fetch(`/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

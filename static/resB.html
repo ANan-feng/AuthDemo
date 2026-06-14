@@ -195,8 +195,7 @@
         
         // 调用后端权限校验接口 /api/check_auth
         try {
-            const BACKEND_URL = 'http://127.0.0.1:5000';
-            const response = await fetch(`${BACKEND_URL}/api/check_auth`, {
+            const response = await fetch(`/api/check_auth`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
